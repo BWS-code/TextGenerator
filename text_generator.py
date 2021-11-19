@@ -19,34 +19,47 @@ def get_corpus(filename, pattern):
     return regexp_tokenize(text, pattern)
 
 
+def get_bigrams(tokens):
+    return [[tokens[i], tokens[i + 1]] for i in range(len(tokens) - 1)]
+
+
+def get_bigrams_stats(bigrams):
+    return f'Number of bigrams: {len(bigrams)}'
+
+
 def get_corpus_stats(corp):
     total = len(corp)
     unique = len(set(corp))
     return f'Corpus statistics\nAll tokens: {total}\nUnique tokens: {unique}'
 
 
-def get_token_by_ind(ind, tokens):
+def get_element_by_ind(ind, what):
     if match(r'^-?\d+$', ind) is None:
         raise TypeError
-    if int(ind) > len(tokens) - 1 or int(ind) < 0 and abs(int(ind)) > len(tokens):
+    if int(ind) > len(what) - 1 or int(ind) < 0 and abs(int(ind)) > len(what):
         raise RangeError
-    print(tokens[int(ind)])
+    if len(what[0]) == 1:  # element is tokens list
+        print(what[int(ind)])
+    if len(what[0]) == 2:  # element is bigram list
+        print(f'Head: {what[int(ind)][0]} Tail: {what[int(ind)][1]}')
 
 
 def main():
     file = input()
     pattern = r'\S+'
     tokens = get_corpus(file, pattern)
-    print(get_corpus_stats(tokens))
+    bigrams = get_bigrams(tokens)
+    print(get_bigrams_stats(bigrams))
     while True:
         entry = input()
         if entry == 'exit':
             break
         try:
-            get_token_by_ind(entry, tokens)
+            get_element_by_ind(entry, bigrams)
         except RangeError as err:
             print(err)
         except TypeError as err:
             print(err)
+
 
 main()
